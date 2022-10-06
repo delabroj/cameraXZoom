@@ -30,10 +30,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.util.Rational
+import android.view.*
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.camera.core.*
@@ -324,8 +322,24 @@ class CameraFragment : Fragment() {
         try {
             // A variable number of use-cases can be passed here -
             // camera provides access to CameraControl & CameraInfo
+
+            // Zoom viewport 2x
+            val viewPort: ViewPort = ViewPort.Builder(
+                Rational(
+                    2,
+                    1
+                ), Surface.ROTATION_0
+            ).setScaleType(ViewPort.FILL_CENTER).build()
+
+            val useCaseGroupBuilder: UseCaseGroup.Builder = UseCaseGroup.Builder().setViewPort(
+                viewPort
+            )
+
+            useCaseGroupBuilder.addUseCase(preview!!)
+            useCaseGroupBuilder.addUseCase(imageCapture!!)
+            useCaseGroupBuilder.addUseCase(imageAnalyzer!!)
             camera = cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageCapture, imageAnalyzer)
+                this, cameraSelector, useCaseGroupBuilder.build())
 
             // Attach the viewfinder's surface provider to preview use case
             preview?.setSurfaceProvider(fragmentCameraBinding.viewFinder.surfaceProvider)
