@@ -330,6 +330,9 @@ class CameraFragment : Fragment() {
             // Attach the viewfinder's surface provider to preview use case
             preview?.setSurfaceProvider(fragmentCameraBinding.viewFinder.surfaceProvider)
             observeCameraState(camera?.cameraInfo!!)
+
+            // Zoom camera to max
+            camera?.cameraControl?.setLinearZoom(1.toFloat())
         } catch (exc: Exception) {
             Log.e(TAG, "Use case binding failed", exc)
         }
